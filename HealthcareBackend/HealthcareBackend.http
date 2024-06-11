@@ -1,6 +1,6 @@
 @HealthcareBackend_HostAddress = http://localhost:5273
 
-GET {{HealthcareBackend_HostAddress}}/weatherforecast/
+GET {{HealthcareBackend_HostAddress}}/startup/
 Accept: application/json
 
 ###

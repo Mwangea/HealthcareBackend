@@ -16,7 +16,7 @@ namespace HealthcareBackend.Authentication
             _databaseConnection = databaseConnection;
         }
 
-        public bool Register(User user, string password)
+        public bool Register(RegisterModel user, string password)
         {
             user.PasswordHash = HashPassword(password);
             using (var connection = _databaseConnection.GetConnection())
@@ -24,6 +24,22 @@ namespace HealthcareBackend.Authentication
                 var sql = "INSERT INTO Users (Username, PasswordHash, Email) VALUES (@Username, @PasswordHash, @Email)";
                 var result = connection.Execute(sql, user);
                 return result > 0;
+            }
+        }
+
+        public User Login(string username, string password)
+        {
+            using (var connection = _databaseConnection.GetConnection())
+            {
+                var sql = "SELECT * FROM Users WHERE Username = @Username";
+                var user = connection.QuerySingleOrDefault<User>(sql, new { Username = username });
+
+                if (user == null || !VerifyPassword(password, user.PasswordHash))
+                {
+                    return null;
+                }
+
+                return user;
             }
         }
 

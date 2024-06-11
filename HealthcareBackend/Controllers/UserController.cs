@@ -17,13 +17,33 @@ namespace HealthcareBackend.Controllers
             }
 
             [HttpPost("register")]
-            public IActionResult Register([FromBody] User user, [FromBody] string password)
+            public IActionResult Register([FromBody] RegisterModel model)
+           {
+            var user = new RegisterModel
             {
-                if (_authService.Register(user, password))
-                    return Ok(new { message = "Registration successfull" });
-                return BadRequest(new { message = " Registration Failed" });
+                Username = model.Username,
+                Email = model.Email,
+            };
+
+            if (_authService.Register(user, model.PasswordHash))
+                return Ok(new { message = "Registration successful" });
+
+            return BadRequest(new { message = "Registration failed" });
+           }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginModel model)
+        {
+            var user = _authService.Login(model.Username, model.PasswordHash);
+            if (user != null)
+            {
+                return Ok(new { message = "Login successful", user });
             }
 
+            return BadRequest(new { message = "Login failed" });
         }
+
+
+    }
     
 }
